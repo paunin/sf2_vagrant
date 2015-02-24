@@ -1,0 +1,6 @@
+---
+# Configure RabbitMQ
+
+- name: rabbitmq default file
+  template: src=etc/default/rabbitmq-server.j2 dest=/etc/default/rabbitmq-server owner=root group=root mode=0644
+  notify: restart rabbitmq-server

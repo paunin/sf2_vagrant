@@ -1,0 +1,30 @@
+---
+- name: Add repository key for PHP
+  sudo: yes
+  apt_key:
+    url: "http://www.dotdeb.org/dotdeb.gpg"
+
+- name: Add repository to install last PHP version
+  sudo: yes
+  apt_repository:
+    repo: "deb http://packages.dotdeb.org {{ansible_distribution_release}}-{{php_repo_pack}} all"
+
+- name: Add repository src to install last PHP version
+  sudo: yes
+  apt_repository:
+    repo: "deb-src http://packages.dotdeb.org {{ansible_distribution_release}}-{{php_repo_pack}} all"
+    update_cache: yes
+
+- name: Install php5
+  sudo: yes
+  apt:
+    name: php5={{php_version}}
+    force: yes
+
+- name: Ensure PHP modules are present using apt
+  sudo: yes
+  apt:
+    name: "{{ php_package }}-{{ item.value }}"
+    state: present
+    update_cache: yes
+  with_dict: php_modules

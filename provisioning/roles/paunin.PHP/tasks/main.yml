@@ -1,0 +1,14 @@
+---
+- name: Include variables.
+  include_vars: "common.yml"
+
+- include: generic-install.yml
+
+- include: custom-php-ini.yml
+
+- include: config-xdebug.yml
+
+- include: config-fpm.yml
+
+- include: setup-composer.yml
+  when: php['composer']['present']

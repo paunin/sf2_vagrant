@@ -1,0 +1,72 @@
+---
+php_version: 5.5*
+php_repo_pack: php55
+
+php_modules:
+    0: cli
+    1: fpm
+php:
+  expose_php: 'On'
+  max_execution_time: '30'
+  max_input_time: '60'
+  memory_limit: '128M'
+  error_reporting: 'E_ALL & ~E_DEPRECATED & ~E_STRICT'
+  display_errors: 'Off'
+  display_startup_errors: 'Off'
+  track_errors: 'Off'
+  variables_order: 'GPCS'
+  post_max_size: '8M'
+  Date:
+    timezone: 'America/New_York'
+  composer:
+    present: False
+
+apt_cache_valid_time: 86400
+
+php_fpm_pools:
+ - name: foo
+   user: www-data
+   group: www-data
+   listen: 8000
+   chdir: /
+
+php_fpm_pool_defaults:
+  pm: dynamic
+  pm.max_children: 5
+  pm.start_servers: 2
+  pm.min_spare_servers: 1
+  pm.max_spare_servers: 3
+
+php_fpm_default_pool:
+  delete: yes
+  name: www.conf
+
+php_fpm_ini:
+ - option: "engine"
+   section: "PHP"
+   value: "1"
+ - option: "error_reporting"
+   section: "PHP"
+   value: "E_ALL & ~E_DEPRECATED & ~E_STRICT"
+ - option: "ldap.max_links"
+   section: "ldap"
+   value: "1"
+
+php_fpm_config:
+ - option: "error_log"
+   section: "global"
+   value: "/var/log/php5-fpm.log"
+
+php_xdebug_remote_enable: "false"
+php_xdebug_remote_connect_back: "false"
+php_xdebug_remote_host: localhost
+php_xdebug_remote_port: "9000"
+php_xdebug_remote_log: /tmp/xdebug.log
+php_xdebug_idekey: XDEBUG
+php_xdebug_remote_autostart: "false"
+php_xdebug_ide_servername: ""
+php_max_nesting_level: 200
+php_pecl_extensions:
+  - xdebug
+php_pecl_apt_packages:
+  - php-pear

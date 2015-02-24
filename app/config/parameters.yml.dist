@@ -1,0 +1,13 @@
+parameters:
+    database_driver: pdo_pgsql
+    database_host: 127.0.0.1
+    database_port: null
+    database_name: sf2_vagrant
+    database_user: sf2_vagrant
+    database_password: sf2_vagrant
+    mailer_transport: smtp
+    mailer_host: 127.0.0.1
+    mailer_user: null
+    mailer_password: null
+    locale: en
+    secret: 91fdc69957421dde9ecf52d391e0002dc35bf887

@@ -1,0 +1,15 @@
+---
+- name: Add custom PHP ini
+  sudo: yes
+  template:
+    src: "etc/php5/mods-available/custom.ini.j2"
+    dest: "{{ php_conf_dir }}/custom.ini"
+
+- name: Enabling custom config in PHP fpm conf
+  sudo: yes
+  file: src={{ php_conf_dir }}/custom.ini  dest=/etc/php5/fpm/conf.d/90-custom.ini state=link
+  notify:  reload php-fpm
+
+- name: Enabling custom config in PHP cli conf
+  sudo: yes
+  file: src={{ php_conf_dir }}/custom.ini  dest=/etc/php5/cli/conf.d/90-custom.ini state=link

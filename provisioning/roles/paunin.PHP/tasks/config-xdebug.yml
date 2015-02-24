@@ -1,0 +1,18 @@
+---
+- name: Copy xdebug INI into mods-available folder.
+  template: >
+    src=xdebug.ini.j2
+    dest=/etc/php5/mods-available/xdebug.ini
+    owner=root group=root mode=644
+
+- name: Enabling xdebug config in PHP cli conf
+  sudo: yes
+  file: src={{ php_conf_dir }}/xdebug.ini  dest=/etc/php5/cli/conf.d/20-xdebug.ini state=link
+
+- name: Enabling xdebug config in PHP fpm conf
+  sudo: yes
+  file: src={{ php_conf_dir }}/xdebug.ini  dest=/etc/php5/fpm/conf.d/20-xdebug.ini state=link
+  notify:  reload php-fpm
+
+- name: Add config for console debuging
+  shell: export PHP_IDE_CONFIG="serverName={{php_xdebug_ide_servername}}"

@@ -1,0 +1,88 @@
+---
+- hosts: default
+  sudo: yes
+
+  roles:
+    - role: paunin.PHP
+      php_package: php5
+      php_modules:
+          0: cli
+          1: fpm
+          2: intl
+          3: gd
+          4: curl
+          5: common
+          6: geoip
+          7: mcrypt
+          9: xmlrpc
+          10: pspell
+          11: pgsql
+          12: xdebug
+          14: dev
+      php:
+        expose_php: 'On'
+        max_execution_time: '30'
+        max_input_time: '60'
+        memory_limit: '512M'
+        error_reporting: 'E_ALL & ~E_DEPRECATED & ~E_STRICT'
+        display_errors: 'Off'
+        display_startup_errors: 'Off'
+        track_errors: 'Off'
+        variables_order: 'GPCS'
+        post_max_size: '50M'
+        upload_max_filesize: '50M'
+        Date:
+          timezone: 'Europe/Paris'
+        composer:
+          present: True
+      php_xdebug_remote_enable: "true"
+      php_xdebug_remote_connect_back: "true"
+      php_xdebug_remote_autostart: "true"
+      php_max_nesting_level: 300
+      php_xdebug_remote_host: "192.168.33.1"
+      php_xdebug_ide_servername: "sf2.virtual.local"
+      php_xdebug_idekey: PHPSTORM
+      php_xdebug_remote_log: ""
+
+    - role: paunin.postgresql
+      postgresql_version: 9.4
+      postgresql_encoding: 'UTF-8'
+      postgresql_locale: 'en_US.UTF-8'
+      postgresql_admin_user: "postgres"
+      postgresql_default_auth_method: "trust"
+      postgresql_databases:
+        - name: sf2_vagrant
+          hstore: yes         # flag to install the hstore extension on this database (yes/no)
+          uuid_ossp: yes      # flag to install the uuid-ossp extension on this database (yes/no)
+      postgresql_users:
+        - name: sf2_vagrant
+          pass: sf2_vagrant
+          encrypted: no       # denotes if the password is already encrypted.
+      postgresql_user_privileges:
+        - name: sf2_vagrant           # user name
+          db: sf2_vagrant                  # database
+          priv: "ALL"                      # privilege string format: example: INSERT,UPDATE/table:SELECT/anothertable:ALL
+          role_attr_flags: "CREATEDB"      # role attribute flags
+
+    - role: jdauphant.nginx
+      nginx_http_params:
+          - sendfile on
+          - access_log /var/log/nginx/access.log
+      nginx_sites:
+         sf2.virtual.local:
+           - listen 8080
+           - server_name sf2.virtual.local localhost
+           - root /var/www/web
+           - location / { try_files $uri /app.php$is_args$args; }
+           - location ~ ^/(app_dev|config)\.php(/|$) { fastcgi_pass 127.0.0.1:8000; fastcgi_split_path_info ^(.+\.php)(/.*)$; include fastcgi_params; fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name; fastcgi_param HTTPS off; }
+           - location ~ ^/app\.php(/|$) { fastcgi_pass 127.0.0.1:8000; fastcgi_split_path_info ^(.+\.php)(/.*)$; include fastcgi_params; fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name; fastcgi_param HTTPS off; internal;}
+
+    - role: alexeymedvedchikov.rabbitmq
+      rabbitmq_erlang_cookie: 1qa2ws3ed
+      rabbitmq_ulimit_open_files: 1024
+      rabbitmq_create_cluster: no
+      rabbitmq_cluster_master: localhost
+      rabbitmq_vhosts: []
+      rabbitmq_plugins:
+        - rabbitmq_management
+
